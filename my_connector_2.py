@@ -21,12 +21,13 @@ class MyConnector(MultiverseClient):
         self.loginfo("Sending request meta data: " + str(self.request_meta_data))
         self._communicate(True)
         self.loginfo("Received response meta data: " + str(self.response_meta_data))
+        # print(self.response_meta_data)
 
     def send_and_receive_data(self) -> None:
         self.loginfo("Sending data: " + str(self.send_data))
         self._communicate(False)
         self.loginfo("Received data: " + str(self.receive_data))
-        return self.receive_data
+        
 
 class ros_publiser:
     def __init__(self , connector ):
@@ -39,7 +40,7 @@ class ros_publiser:
 
         self.connector.request_meta_data["send"] = {}
         self.connector.request_meta_data["receive"] = {}
-        self.connector.request_meta_data["receive"]["my_object"] = [
+        self.connector.request_meta_data["receive"]["PlayerPawn"] = [
         "position",
         "quaternion"
         ]
@@ -59,9 +60,9 @@ class ros_publiser:
         self.human_pose_msg.position.x = human_pose[1]
         self.pub.publish(self.human_pose_msg)    
 
-if __name__ == "__main__" : 
+if __name__ == "__main__":
     multiverse_meta_data = MultiverseMetaData(
-        world_name="my_world",
+        world_name="world",
         simulation_name="my_simulation",
         length_unit="m",
         angle_unit="rad",
@@ -69,28 +70,57 @@ if __name__ == "__main__" :
         time_unit="s",
         handedness="rhs",
     )
-
     my_connector = MyConnector(port="5000",
                                multiverse_meta_data=multiverse_meta_data)
     my_connector.run()
-    obj= ros_publiser()
-    while not rospy.is_shutdown :
-        obj.unreal_sub()
-        rospy.sleep(0.1)
-    my_connector.stop()
 
     # my_connector.request_meta_data["send"] = {}
-    # my_connector.request_meta_data["send"]["my_object"] = [
-        # "position",
-        # "quaternion"
+    # my_connector.request_meta_data["send"]["PlayerPawn"] = [
+    #     "position",
+    #     "quaternion"
     # ]
     # my_connector.send_and_receive_meta_data()
-# 
+
     # sim_time = my_connector.sim_time # The current simulation time
     # my_object_pos = [1.0, 2.0, 3.0]
     # my_object_quat = [0.0, 0.0, 0.0, 1.0]
-# 
-    # my_connector.send_data = [sim_time] + my_object_pos + my_object_quat # The send_data to the correct order
+
+    # my_connector.send_data = [sim_time] #+ my_object_pos + my_object_quat # The send_data to the correct order
     # my_connector.send_and_receive_data()
 
     # Change the request meta data to receive the position and quaternion of my_object
+
+    my_connector.request_meta_data["send"] = {}
+    # my_connector.request_meta_data["send"] = {}
+    my_connector.request_meta_data["send"]["PR2"] = [
+        "position",
+        "quaternion"
+    ]
+    my_connector.send_and_receive_meta_data()
+    sim_time = my_connector.sim_time # The current simulation time
+    my_object_pos = [1.0, 2.0, 3.0]
+    my_object_quat = [0.0, 0.0, 0.0, 1.0]
+
+    my_connector.send_data = [sim_time] + my_object_pos + my_object_quat
+    my_connector.send_and_receive_data()
+    my_connector.request_meta_data["send"] = {}
+    my_connector.request_meta_data["receive"] = {}
+    my_connector.request_meta_data["receive"]["PlayerPawn"] = [
+        "position",
+        "quaternion"
+    ]
+    
+    my_connector.send_and_receive_meta_data()
+    while True : 
+        sim_time = my_connector.sim_time
+        my_connector.send_data = [sim_time]
+        my_connector.send_and_receive_data()
+
+    # my_connector.request_meta_data["receive"][""] = [""]
+    # my_connector.send_and_receive_meta_data()
+
+    # sim_time = my_connector.sim_time # The current simulation time
+    # my_connector.send_data = [sim_time]
+    # my_connector.send_and_receive_data()
+
+    my_connector.stop()
