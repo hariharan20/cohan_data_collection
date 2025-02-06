@@ -72,8 +72,20 @@ multiverse_meta_data = MultiverseMetaData(
     )
 my_connector = MyConnector(port="5000",
                            multiverse_meta_data=multiverse_meta_data)
+
+
+
+multiverse_meta_data_1 = MultiverseMetaData(
+        world_name="world",
+        simulation_name="my_simulation_1",
+        length_unit="m",
+        angle_unit="rad",
+        mass_unit="kg",
+        time_unit="s",
+        handedness="rhs",
+    )
 my_connector_sender = MyConnector(port="4000",
-                           multiverse_meta_data=multiverse_meta_data)
+                           multiverse_meta_data=multiverse_meta_data_1)
 if __name__ == "__main__":
     my_connector.run()
 
