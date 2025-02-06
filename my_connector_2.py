@@ -60,8 +60,8 @@ class ros_publiser:
         self.human_pose_msg.position.x = human_pose[1]
         self.pub.publish(self.human_pose_msg)    
 
-if __name__ == "__main__":
-    multiverse_meta_data = MultiverseMetaData(
+
+multiverse_meta_data = MultiverseMetaData(
         world_name="world",
         simulation_name="my_simulation",
         length_unit="m",
@@ -70,8 +70,10 @@ if __name__ == "__main__":
         time_unit="s",
         handedness="rhs",
     )
-    my_connector = MyConnector(port="5000",
-                               multiverse_meta_data=multiverse_meta_data)
+my_connector = MyConnector(port="5000",
+                           multiverse_meta_data=multiverse_meta_data)
+
+if __name__ == "__main__":
     my_connector.run()
 
     # my_connector.request_meta_data["send"] = {}
